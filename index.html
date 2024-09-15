@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" 
+          content="width=device-width,initial-scale=1.0">
+    <title>Responsive Form Card</title>
+    <link rel="stylesheet" href=
+"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <h1>THE FEASTY FEEDBACK :)</h1>
+    <h3>Feedback Form using
+        HTML and CSS
+    </h3>
+    <div class="form-box">
+        <div class="textup">
+            <i class="fa fa-solid fa-clock"></i>
+            It only takes two minutes!!
+        </div>
+        <form>
+            <label for="uname">
+                <i class="fa fa-solid fa-user"></i>
+                Name
+            </label>
+            <input type="text" id="uname" 
+                   name="uname" required>
+
+            <label for="email">
+                <i class="fa fa-solid fa-envelope"></i>
+                Email Address
+            </label>
+            <input type="email" id="email" 
+                   name="email" required>
+
+            <label for="phone">
+                <i class="fa-solid fa-phone"></i>
+                Phone No
+            </label>
+            <input type="tel" id="phone" 
+                   name="phone" required>
+
+            <label>
+                <i class="fa-solid fa-face-smile"></i>
+                Do you satisfy with our service?
+            </label>
+            <div class="radio-group">
+                <input type="radio" id="yes" 
+                       name="satisfy" value="yes" checked>
+                <label for="yes">Yes</label>
+
+                <input type="radio" id="no" 
+                       name="satisfy" value="no">
+                <label for="no">No</label>
+            </div>
+
+            <label for="msg">
+                <i class="fa-solid fa-comments" 
+                   style="margin-right: 3px;"></i>
+                Write your Suggestions:
+            </label>
+            <textarea id="msg" name="msg" 
+                      rows="4" cols="10" required>
+            </textarea>
+            <button type="submit">
+                Submit
+            </button>
+        </form>
+    </div>
+</body>
+
+</html>nav>
+        <button class="button" onclick="showSection('home')">Home</button>
+        <button class="button" onclick="showSection('menu')">Menu</button>
+        <button class="button" onclick="showSection('order-summary')">Order Summary</button>
+    </nav>
+
+    <!-- Home Section -->
+    <div id="home" class="section active">
+        <h1>Welcome to The Fusion Feast</h1>
+        <img src="https://www.fusion6.com.au/wp-content/uploads/2021/04/Indian-Dishes-You-Need-to-Try.jpg" alt="Indian Dishes" class="menu-image">
+        <h2>Your Gateway to Delicious Fusion Dishes!</h2>
+        <p>Treat yourself to a delightful meal today!</p>
+    </div>
+
+    <!-- Menu Section -->
+    <div id="menu" class="section">
+        <div class="menu-container">
+            <h1>The Fusion Feast - Menu</h1>
+            <div id="category-buttons">
+                <button class="button" onclick="showItems('starters')">Starters</button>
+                <button class="button" onclick="showItems('main-course')">Main Course</button>
+                <button class="button" onclick="showItems('beverages')">Beverages</button>
+                <button class="button" onclick="showItems('desserts')">Desserts</button>
+            </div>
+
+            <div id="items-list" class="hidden">
+                <h3 id="category-title">Menu Items</h3>
+                <div id="items"></div>
+                <label for="item-quantity">Quantity: 
+                    <input type="number" id="item-quantity" min="1">
+                </label>
+                <button class="button" onclick="addToOrder()">Add to Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Summary Section -->
+    <div id="order-summary" class="section">
+        <h1>Your Order Summary</h1>
+        <div class="order-summary" id="summary-content">
+            <!-- Summary will be dynamically generated here -->
+        </div>
+        <p id="total-amount">Total: Rs. 0</p>
+        <button class="button" onclick="clearOrder()">Clear Order</button>
+    </div>
+
+    <script>
+        // Menu items and prices
+        const menus = {
+            'starters': {
+                'Paneer Pakoda': 'Rs. 50',
+                'French Fries': 'Rs. 40',
+                'Chicken Wings': 'Rs. 50',
+                'Veg Samosa': 'Rs. 25'
+            },
+            'main-course': {
+                'Chicken Biryani': 'Rs. 219',
+                'Butter Chicken': 'Rs. 189',
+                'Pizza': 'Rs. 99'
+            },
+            'beverages': {
+                'Lemonade': 'Rs. 25',
+                'Cold Coffee': 'Rs. 25',
+                'Soft Drink': 'Rs. 50'
+            },
+            'desserts': {
+                'Vanilla Ice-Cream': 'Rs. 35',
+                'Chocolate Ice-Cream': 'Rs. 50',
+                'Choco Lava Cake': 'Rs. 25'
+            }
+        };
+
+        // Order data storage
+        let orderTotal = 0;
+        let orderSummary = {};
+
+        // Function to display the appropriate section (Home, Menu, Order Summary)
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+
+            if (section === 'order-summary') {
+                loadOrderSummary();
+            }
+        }
+
+        // Function to display menu items based on the category
+        function showItems(category) {
+            const itemsList = document.getElementById('items-list');
+            const itemsContainer = document.getElementById('items');
+            const categoryTitle = document.getElementById('category-title');
+            itemsContainer.innerHTML = '';
+
+            if (menus[category]) {
+                itemsList.classList.remove('hidden');
+                categoryTitle.textContent = category.replace('-', ' ').toUpperCase();
+                const items = menus[category];
+                for (const item in items) {
+                    itemsContainer.innerHTML += `<div>
+                        <label>
+                            <input type="radio" name="item" value="${item}">
+                            ${item}: ${items[item]}
+                        </label>
+                    </div>`;
+                }
+            }
+        }
+
+        // Function to add items to the order
+        function addToOrder() {
+            const selectedItem = document.querySelector('input[name="item"]:checked');
+            const quantity = document.getElementById('item-quantity').value;
+
+            if (selectedItem && quantity > 0) {
+                const item = selectedItem.value;
+                const price = menus[Object.keys(menus).find(cat => menus[cat][item])][item];
+                const totalPrice = parseInt(price.replace('Rs.', '')) * quantity;
+
+                if (orderSummary[item]) {
+                    orderSummary[item].quantity += parseInt(quantity);
+                    orderSummary[item].totalPrice += totalPrice;
+                } else {
+                    orderSummary[item] = {
+                        quantity: parseInt(quantity),
+                        totalPrice: totalPrice
+                    };
+                }
+
+                orderTotal += totalPrice;
+                alert(`${quantity} ${item}(s) added to your order.`);
+            } else {
+                alert('Please select an item and enter a valid quantity.');
+            }
+        }
+
+        // Function to load the order summary and display it
+        function loadOrderSummary() {
+            const summaryContent = document.getElementById('summary-content');
+            summaryContent.innerHTML = '';
+
+            if (Object.keys(orderSummary).length === 0) {
+                summaryContent.innerHTML = '<p>No items in the order.</p>';
+            } else {
+                for (const item in orderSummary) {
+                    const { quantity, totalPrice } = orderSummary[item];
+                    summaryContent.innerHTML += `<div>${item}: ${quantity} x Rs. ${totalPrice / quantity} = Rs. ${totalPrice}</div>`;
+                }
+                document.getElementById('total-amount').textContent = `Total: Rs. ${orderTotal}`;
+            }
+        }
+
+        // Function to clear the order
+        function clearOrder() {
+            orderSummary = {};
+            orderTotal = 0;
+            loadOrderSummary();
+            alert('Order cleared.');
+        }
+    </script>
+</body>
+</html>
